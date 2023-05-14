@@ -1,28 +1,41 @@
-import sqlite3
+from pathlib import Path
+from peewee import *
 
 
-class Database:
-    def __init__(self, path: str) -> None:
-        self.connection = sqlite3.connect(path)
-        self.cursor = self.connection.cursor()
+# Определяем базовую модель о которой будут наследоваться остальные
+class BaseModel(Model):
+    class Meta:
+        database = SqliteDatabase(Path('database', 'notes.db'))
 
-        sql_create_table = """CREATE TABLE IF NOT EXISTS notes(
-            id INT NOT NULL AUTO_INCREMENT,
-            title VARCHAR NOT NULL,
-            url VARCHAR NOT NULL,
-            PRIMARY KEY (id)
-        )"""
+# Определяем модель исполнителя (таблица в БД)
+class Note(BaseModel):
+    note_id = AutoField(column_name='id')
+    note_title = TextField(column_name='title', null=False)
+    note_link = TextField(column_name='note', null=False)
 
-        self.cursor.execute(sql_create_table)
-        self.connection.commit()
-
-    def add_record(self) -> None:
-        ...
-
-    def update_record(self) -> None:
-        ...
-
-    def del_record(self) -> None:
-        ...
-
+    class Meta:
+        db_table = 'Notes'
+        ordered_by = 'id'
     
+
+#   Получение одиночной записи
+# note = Note.get(Note.note_id == 1)
+
+#   Получение набора записей
+# query = Note.select().where(Note.note_id < 10).limit(5).order_by(Note.note_id.desc())
+# Note_selected = query.dicts().execute()
+#   Получаем итерируемый объект peewee, который можем перебрать
+ 
+#   Создание записи
+# 1) Note.create(note_title='<SomeTitle>', note_link='<SomeLink>')
+
+# 2) note = Note(note_title='<SomeTitle>', note_link='<SomeLink>')
+# 2) note.save()
+
+#   Обновление записи
+# 1) note = Note(note_title='<SomeTitle>')
+# 1) note.note_link = '<SomeLink>'
+# 1) note.save()
+
+# 2) query = Note.update(note_link='<SomeNewLink>').where(Note.note_id==4)
+# 2) query.execute()
