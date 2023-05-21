@@ -1,5 +1,6 @@
 from aiogram import Bot, Dispatcher
 from aiogram.types import Message
+from pathlib import Path
 
 from config_data.config import Config, load_config
 from handlers import user_handlers, other_handlers
@@ -20,10 +21,11 @@ async def main():
 
     logger.info('Starting bot')
 
-    config: Config = load_config('config_data\.env')  # Подгружаем конфиг
+    config: Config = load_config(Path('config_data','.env'))  # Подгружаем конфиг
 
     bot: Bot = Bot(token=config.tg_bot.token,
-                   parse_mode='HTML')
+                   parse_mode='HTML',
+                   session=config.server.proxy)
     dp: Dispatcher = Dispatcher()
 
     # Регистрируем роутеры

@@ -56,7 +56,7 @@ def select_records() -> InlineKeyboardBuilder:
 
     for note in query.dicts().execute():
         keyboard_builder.row(InlineKeyboardButton(text=note['note_title'], 
-                                                  callback_data=note['note_link']))
+                                                  url=note['note_link']))
     keyboard = keyboard_builder.as_markup()
 
     return keyboard
