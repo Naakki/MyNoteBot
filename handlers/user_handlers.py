@@ -1,5 +1,3 @@
-from ast import Call
-import re
 from aiogram import Router, F
 from aiogram.filters import Command, CommandStart, StateFilter,Text
 from aiogram.fsm.context import FSMContext
@@ -70,9 +68,12 @@ async def add_title(message: Message, state: FSMContext):
 
 @router.message(StateFilter(AddNoteRecord.title))
 async def add_link(message: Message, state: FSMContext):
-    await state.update_data(title=message.text)
-    await state.set_state(AddNoteRecord.link)
-    await message.answer(text=RU['press_link'])
+    if message.text not in RU.values():
+        await state.update_data(title=message.text)
+        await state.set_state(AddNoteRecord.link)
+        await message.answer(text=RU['press_link'])
+    else:
+        await message.answer(text=RU['press_title'])
 
 @router.message(StateFilter(AddNoteRecord.link))
 async def add_record(message: Message,state: FSMContext):
